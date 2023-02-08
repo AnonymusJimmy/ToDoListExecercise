@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using EntityFrameworkLibrary.Context;
 using EntityFrameworkLibrary.UnitOfWorks;
 using ToDoListFunc.Startup;
