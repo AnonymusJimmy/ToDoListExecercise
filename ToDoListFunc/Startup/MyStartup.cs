@@ -5,6 +5,8 @@ using EntityFrameworkLibrary.UnitOfWorks;
 using ToDoListFunc.Startup;
 using System;
 using ToDoListFunc.Services;
+using Microsoft.Extensions.Configuration;
+using System.IO;
 
 [assembly: FunctionsStartup(typeof(MyStartup))]
 
@@ -28,12 +30,21 @@ namespace ToDoListFunc.Startup
             service.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             service.Services.AddScoped<IToDoService, ToDoService>();
 
-
             //Creazione del contesto nel database
             //string connectionString = Environment.GetEnvironmentVariable("ConnectionString");
 
             //service.Services.AddDbContext<ToDoListDbContext>(options => options.UseSqlServer(connectionString));
             service.Services.AddDbContext<ToDoListDbContext>();
         }
+
+        public override void ConfigureAppConfiguration(IFunctionsConfigurationBuilder builder)
+        {
+            FunctionsHostBuilderContext context = builder.GetContext();
+
+            builder.ConfigurationBuilder
+                .AddJsonFile(Path.Combine(context.ApplicationRootPath, "appsetting.json"), optional: true, reloadOnChange: false)
+                .AddEnvironmentVariables();
+        }
+
     }
 }

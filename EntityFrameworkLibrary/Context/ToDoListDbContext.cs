@@ -2,9 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Configuration;
 
 namespace EntityFrameworkLibrary.Context
 {
+
+
     public class ToDoListDbContext : DbContext
     {
         //Il Costruttore vuoto è ESSENZIALE in quanto, quando viene lanciata una nuova migrazione, l'applicazione
@@ -18,6 +21,7 @@ namespace EntityFrameworkLibrary.Context
         {
 
         }
+
         
         //Construction of the Sql tables
         public virtual DbSet<ToDoItem> ToDoItems { get; set; }
@@ -26,12 +30,22 @@ namespace EntityFrameworkLibrary.Context
         // OnConfigure Method (Used for Add-Migration) //
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            //var keyVaultUri = Environment.GetEnvironmentVariable("KVaultUri");
+            //Environment.SetEnvironmentVariable("VaultUri", keyVaultUri, EnvironmentVariableTarget.User);
+            //var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+            //var secret = secretClient.GetSecret("AzureConnString-AF").Value.Value;
 
-            var keyVaultUri = Environment.GetEnvironmentVariable("KVaultUri");
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsetting.json", optional: false, reloadOnChange: true)
+                .Build(); 
+            var keyVaultUri = configuration.GetValue<string>("KVaultUri");
+
+
+            //var keyVaultUri = Environment.GetEnvironmentVariable("KVaultUri");
             var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-            string secret = secretClient.GetSecret("ConnectionString-AF").Value.Value;
+            var secret = secretClient.GetSecret("AzureConnString-AF").Value.Value;
 
-            if(!optionsBuilder.IsConfigured)
+            if (!optionsBuilder.IsConfigured)
             {
                 optionsBuilder.UseSqlServer(secret);
             }

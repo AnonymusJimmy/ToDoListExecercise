@@ -9,6 +9,8 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using ToDoListFunc.Services;
 using System.IO;
 using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 [assembly: FunctionsStartup(typeof(ToDoListFunc.Startup.MyStartup))]  
 
