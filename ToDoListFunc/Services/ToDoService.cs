@@ -1,72 +1,79 @@
 ﻿using EntityFrameworkLibrary.Models;
 using EntityFrameworkLibrary.UnitOfWorks;
 using Library.Exceptions.Exceptions;
+using Mapster;
+using MapsterMapper;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ToDoListFunc.Dto;
+using ToDoListFunc.Dtos;
 
 namespace ToDoListFunc.Services
 {
     public class ToDoService : IToDoService
     {
-        public IUnitOfWork _unitOfWork { get; set; }
-     
-        public ToDoService(IUnitOfWork unitOfWork)
+        private IUnitOfWork _unitOfWork { get; set; }
+        private IMapper _mapper { get; set; }
+
+        public ToDoService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        // ADD ITEM METHOD //
-        public async Task<string> AddItem(ToDoItem item)
+
+        // ADD ITEM METHOD // 
+        public async Task<string> AddItem(ToDoItemRequest item)
         {
             try
             {
-                var existingItem = await _unitOfWork.ItemRepository.GetItemById(item.Id);
-                if (existingItem != null)
-                {
-                    throw new AlreadyExistException();
-                }
-                await _unitOfWork.ItemRepository.AddItem(item);
+                var itemToCreate = _mapper.Map<ToDoItem>(item);
+                await _unitOfWork.ItemRepository.AddItem(itemToCreate);
                 await _unitOfWork.SaveChangesAsync();
+                _unitOfWork.Dispose();
                 return "Perfect, item has been successfully created";
             }
-            catch (AlreadyExistException exc)
+            catch (CustomExeptions)
             {
-                return exc.Message;
+
+                throw new CustomExeptions("Error during insert operation.");
             }
-            catch(Exception ex)
-            {
-                return ex.Message;
-            }
+            
         }
         //
 
+
         //UPDATE ITEM METHOD //
-        public async Task<(string, ToDoItem)> UpdateItem(ToDoItem item)
+        public async Task<(string, ToDoItemResponse)> UpdateItem(ToDoItemRequest itemReq, int id)
         {
             try
             {
-                var itemToUpdate = await _unitOfWork.ItemRepository.GetItemById(item.Id);
+                var itemToUpdate = await _unitOfWork.ItemRepository.GetItemById(id);
                 if (itemToUpdate == null)
                 {
-                    throw new NotExistException($"Attention, item with id {item.Id} doesn't exist.");
+                    throw new NotExistException($"Attention, item with id {id} doesn't exist.");
                 }
                 await _unitOfWork.ItemRepository.UpdateItem(itemToUpdate);
-                itemToUpdate.TaskName = item.TaskName;
-                itemToUpdate.IsCompleted = item.IsCompleted;
+                itemToUpdate.TaskDescription = itemReq.TaskName;
+                itemToUpdate.IsCompleted = itemReq.IsDone;
+
                 await _unitOfWork.SaveChangesAsync();
-                return ("Perfect, item has been successfully updated", itemToUpdate);
+                _unitOfWork.Dispose();
+                var itemUpdatedDto = _mapper.Map<ToDoItemResponse>(itemToUpdate);
+                return ("Perfect, item has been successfully updated", itemUpdatedDto);
             }/*
             catch(NotExistException exc)
             {
                 return (exc.Message, null);
             }*/
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return (ex.Message, null);
             }
         }
         //
+
 
         //DELETE ITEM METHOD//
         public async Task<string> DeleteItem(int id)
@@ -74,70 +81,63 @@ namespace ToDoListFunc.Services
             try
             {
                 var itemToDelete = await _unitOfWork.ItemRepository.GetItemById(id);
-                if(itemToDelete == null)
+                if (itemToDelete == null)
                 {
                     throw new NotExistException($"Attention, item with id {id} doesn't exist.");
                 }
                 await _unitOfWork.ItemRepository.DeleteItem(id);
                 await _unitOfWork.SaveChangesAsync();
+                _unitOfWork.Dispose();
                 return "Perfect, item has been successfully deleted.";
             }
             /*catch (NotExistException exc)
             {
                 return exc.Message;
             }*/
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return ex.Message;
             }
         }
         //
 
-        //GET ITEM METHOD//
-        /*public async Task<ToDoItem> GetItemById(int id)
-        {
-            try
-            {
-                var itemToFind = await _unitOfWork.ItemRepository.GetItemById(id);
-                if(itemToFind == null)
-                {
-                    throw new NotExistException($"Item with id {id} not found.");
-                }
-                return itemToFind;
-            }
-            catch (NotExistException exc)
-            {
-                Console.WriteLine(exc.Message);
-                return null;
-            }
-            catch(Exception ex)
-            {
-                var exception = ex.Message;
-                return null;
-            }
-        }*/
 
-        public async Task<ToDoItem> GetItemById(int id)
+        //GET ITEM METHOD//
+        public async Task<ToDoItemResponse> GetItemById(int id)
         {
             try
             {
+                //Recupera il ToDoItem con l'id specificato da ToDoListRepository
                 var itemToFind = await _unitOfWork.ItemRepository.GetItemById(id);
-                return itemToFind;
+                if (itemToFind == null)
+                    throw new NotExistException($"item with id {id} not found");
+
+                //Mappa i dati recupareti dal repository ad un oggetto ToDoDto
+                //var itemToFindDto = TypeAdapter.Adapt<ToDoItemDto>(itemToFind);
+                var itemToFindDto = _mapper.Map<ToDoItemResponse>(itemToFind);
+                _unitOfWork.Dispose();
+                return itemToFindDto;
             }
             catch (NotExistException exc)
             {
-                throw new NotExistException($"item with id {id} not found");
+                throw exc;
             }
         }
         //
 
+
         //GET ALL ITEMS METHOD//
-        public async Task<List<ToDoItem>> GetAllItems()
+        public async Task<List<ToDoItemResponse>> GetAllItems()
         {
             try
             {
                 var items = await _unitOfWork.ItemRepository.GetAllItems();
-                return items;
+                if (items == null)
+                    throw new Exception();
+
+                var itemsDto = _mapper.Map<List<ToDoItemResponse>>(items);
+                _unitOfWork.Dispose();
+                return itemsDto;
             }
             catch (Exception)
             {

@@ -3,7 +3,9 @@
     "ToDoListFunc": {
       "commandName": "Project",
       "commandLineArgs": "--port 7195",
-      "launchBrowser": false
+      "launchBrowser": true,
+      "launchUrl": "api/swagger/ui",
+      "applicationUrl": "http://localhost:7195"
     }
   }
 }

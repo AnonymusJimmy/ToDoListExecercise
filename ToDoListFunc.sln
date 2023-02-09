@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToDoListFunc", "ToDoListFun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityFrameworkLibrary", "EntityFrameworkLibrary\EntityFrameworkLibrary.csproj", "{0093EE79-699E-4B8D-A764-3926C096F994}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Library.Exceptions", "Library.Exeptions\Library.Exceptions.csproj", "{D5447AB9-18C1-4B1E-8585-BF15E5E864D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Library.Exceptions", "Library.Exeptions\Library.Exceptions.csproj", "{D5447AB9-18C1-4B1E-8585-BF15E5E864D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

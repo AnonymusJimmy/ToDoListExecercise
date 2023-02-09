@@ -1,7 +1,8 @@
 ﻿using EntityFrameworkLibrary.Models;
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ToDoListFunc.Dto;
+using ToDoListFunc.Dtos;
 
 namespace ToDoListFunc.Services
 {
@@ -10,10 +11,10 @@ namespace ToDoListFunc.Services
 
     public interface IToDoService
     {
-        Task<string> AddItem(ToDoItem item);
+        Task<string> AddItem(ToDoItemRequest item);
         Task<string> DeleteItem(int id);
-        Task<(string, ToDoItem)> UpdateItem(ToDoItem item);
-        Task<ToDoItem> GetItemById(int id);
-        Task<List<ToDoItem>> GetAllItems();
+        Task<(string, ToDoItemResponse)> UpdateItem(ToDoItemRequest item, int id);
+        Task<ToDoItemResponse> GetItemById(int id);
+        Task<List<ToDoItemResponse>> GetAllItems();
     }
 }
