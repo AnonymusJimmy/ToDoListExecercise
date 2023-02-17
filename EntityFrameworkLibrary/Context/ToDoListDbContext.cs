@@ -1,41 +1,39 @@
-﻿using EntityFrameworkLibrary.Models;
-using Microsoft.EntityFrameworkCore;
-﻿using EntityFrameworkLibrary.Models;
-using Microsoft.EntityFrameworkCore;
-using Azure.Identity;
+﻿using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using Microsoft.Extensions.Configuration;
->>>>>>>>> Temporary merge branch 2
-﻿using EntityFrameworkLibrary.Models;
+using EntityFrameworkLibrary.Models;
 using Microsoft.EntityFrameworkCore;
-using Azure.Identity;
-using Azure.Security.KeyVault.Secrets;
-using Microsoft.Extensions.Configuration;
->>>>>>>>> Temporary merge branch 2
 
 namespace EntityFrameworkLibrary.Context
 {
     public class ToDoListDbContext : DbContext
     {
-        //Il Costruttore vuoto è ESSENZIALE in quanto, quando viene lanciata una nuova migrazione, l'applicazione
-        //deve permettere a progetti/library esterni di creare nuove configurazioni senza specificare alcuna connessione.
+        public virtual DbSet<ToDoItem> ToDoItems { get; set; }
+
+        /// <summary>
+        /// Il Costruttore vuoto è ESSENZIALE in quanto, quando viene lanciata una nuova migrazione, l'applicazione
+        /// deve permettere a progetti/library esterni di creare nuove configurazioni senza specificare alcuna connessione.
+        /// </summary>
+        /// 
         public ToDoListDbContext()
         {
 
         }
-       
-            //var keyVaultUri = Environment.GetEnvironmentVariable("KVaultUri");
-            var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-            var secret = secretClient.GetSecret("AzureConnString-AF").Value.Value;
 
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer(secret);
-            }
+        public ToDoListDbContext(DbContextOptions options): base(options)
+        {
+
         }
-        //Construction of the Sql tables
-        public virtual DbSet<ToDoItem> ToDoItems { get; set; }
+       
+        //    //var keyVaultUri = Environment.GetEnvironmentVariable("KVaultUri");
+        //    var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+        //    var secret = secretClient.GetSecret("AzureConnString-AF").Value.Value;
 
+        //    if (!optionsBuilder.IsConfigured)
+        //    {
+        //        optionsBuilder.UseSqlServer(secret);
+        //    }
+        //}
+        //Construction of the Sql tables
 
         // OnConfigure Method (Used for Add-Migration) //
        
