@@ -1,5 +1,17 @@
 ﻿using EntityFrameworkLibrary.Models;
 using Microsoft.EntityFrameworkCore;
+﻿using EntityFrameworkLibrary.Models;
+using Microsoft.EntityFrameworkCore;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Configuration;
+>>>>>>>>> Temporary merge branch 2
+﻿using EntityFrameworkLibrary.Models;
+using Microsoft.EntityFrameworkCore;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Configuration;
+>>>>>>>>> Temporary merge branch 2
 
 namespace EntityFrameworkLibrary.Context
 {
@@ -11,13 +23,16 @@ namespace EntityFrameworkLibrary.Context
         {
 
         }
+       
+            //var keyVaultUri = Environment.GetEnvironmentVariable("KVaultUri");
+            var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
+            var secret = secretClient.GetSecret("AzureConnString-AF").Value.Value;
 
-        public ToDoListDbContext(DbContextOptions<ToDoListDbContext> options) : base(options)
-        {
-
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(secret);
+            }
         }
-
-        
         //Construction of the Sql tables
         public virtual DbSet<ToDoItem> ToDoItems { get; set; }
 
