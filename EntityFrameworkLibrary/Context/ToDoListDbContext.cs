@@ -24,21 +24,6 @@ namespace EntityFrameworkLibrary.Context
 
         }
        
-        //    //var keyVaultUri = Environment.GetEnvironmentVariable("KVaultUri");
-        //    var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-        //    var secret = secretClient.GetSecret("AzureConnString-AF").Value.Value;
-
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        optionsBuilder.UseSqlServer(secret);
-        //    }
-        //}
-        //Construction of the Sql tables
-
-        // OnConfigure Method (Used for Add-Migration) //
-       
-
-
         /*OnModelCreating method for tell to EF how the DB SQL  should be done*/
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
