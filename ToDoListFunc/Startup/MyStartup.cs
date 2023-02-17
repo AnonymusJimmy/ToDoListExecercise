@@ -25,14 +25,12 @@ namespace ToDoListFunc.Startup
             //le repository da iniettare.
             //service.Services.AddScoped<IToDoListRepository, ToDoListRepository>();
 
-
             //  Register Mapster  //
             var config = TypeAdapterConfig.GlobalSettings;
             config.Scan(Assembly.GetExecutingAssembly());
 
             builder.Services.AddSingleton(config);
             builder.Services.AddScoped<IMapper, ServiceMapper>();
-
 
             // Swagger Configuration //
             builder.AddSwashBuckle(Assembly.GetExecutingAssembly(), opts =>
@@ -60,11 +58,9 @@ namespace ToDoListFunc.Startup
             //Configuration Swagger(builder)//
             ConfigureSwagger(builder);
 
-
             //Register UnitOfWork and Service
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
             builder.Services.AddScoped<IToDoService, ToDoService>();
-
 
             //Creazione del contesto nel database
             var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
